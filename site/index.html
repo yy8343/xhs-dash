@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>xhs-title 数据看板</title>
+<style>
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;background:#f6f6f8;color:#222}
+header{background:#ff2442;color:#fff;padding:14px 16px}
+header h1{font-size:18px;margin:0}header small{opacity:.9}
+main{max-width:640px;margin:0 auto;padding:10px}
+section{background:#fff;border-radius:12px;padding:12px 14px;margin:10px 0}
+h2{font-size:16px;margin:0 0 2px}.upd{color:#888;font-size:12px;margin-bottom:8px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.m{background:#fafafa;border-radius:8px;padding:8px}
+.m .k{font-size:12px;color:#666}.m .v{font-size:20px;font-weight:600}.m .d{font-size:12px;color:#888}
+.up{color:#1a7f37}.down{color:#cf222e}
+.list{font-size:14px;margin-top:8px}.list div{display:flex;justify-content:space-between;border-bottom:1px dashed #eee;padding:4px 0}
+.note{font-size:12px;color:#888;margin-top:6px}
+.err{color:#cf222e;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}td,th{padding:4px;border-bottom:1px solid #eee;text-align:right}td:first-child,th:first-child{text-align:left}
+</style>
+</head>
+<body>
+<header><h1>xhs-title 数据看板</h1><small id="gen">加载中…</small></header>
+<main id="app"></main>
+<script>
+(function(){
+var app=document.getElementById('app');
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function has(v){return v!==null&&v!==undefined&&v!==''&&!(Array.isArray(v)&&!v.length)}
+function delta(a,b,pct){
+  if(!has(a)||!has(b))return'';
+  var d=a-b; if(d===0)return'<span class="d">与昨日持平</span>';
+  var s=(d>0?'+':'')+(pct?d.toFixed(1)+' pct':d+(b>0?'（'+(d>0?'+':'')+Math.round(d/b*100)+'%）':''));
+  return'<span class="d '+(d>0?'up':'down')+'">较昨日 '+s+'</span>';
+}
+function metric(k,v,unit,prev,pct){if(!has(v))return'';return'<div class="m"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+(unit||'')+'</div>'+delta(v,prev,pct)+'</div>'}
+function list(title,arr){if(!has(arr))return'';return'<div class="list"><b>'+esc(title)+'</b>'+arr.map(function(x){return'<div><span>'+esc(x.name)+'</span><span>'+esc(x.count)+'</span></div>'}).join('')+'</div>'}
+function section(title,upd,inner){if(!inner||!inner.replace(/<[^>]+>/g,'').trim())return'';return'<section><h2>'+esc(title)+'</h2>'+(upd?'<div class="upd">'+esc(upd)+'</div>':'')+inner+'</section>'}
+function grid(items){var s=items.join('');return s?'<div class="grid">'+s+'</div>':''}
+function render(d){
+  document.getElementById('gen').textContent='页面数据生成于 '+(d.generated_at_bj||'')+' · 每 5 分钟自动刷新';
+  var h='';
+  var t=d.tool;
+  if(t&&t.today){
+    var a=t.today,y=t.yesterday||{},w=t.week||{};
+    h+=section('工具使用 · 今日（'+t.date+'）','更新于 '+t.updated_at_bj+' · '+t.freq,
+      grid([metric('访客',a.visitors,'',y.visitors),metric('生成人数',a.generate,'',y.generate),metric('生成率',a.generate_rate,'%',y.generate_rate,1),
+        metric('复制标题人数',a.copy_title,'',y.copy_title),metric('复制正文人数',a.copy_body,'',y.copy_body),metric('复制率（下限）',a.copy_rate_min,'%',y.copy_rate_min,1),
+        metric('停留≥30秒',a.engaged_30s_rate,'%',y.engaged_30s_rate,1),metric('近似跳出率',a.bounce_approx,'%',y.bounce_approx,1),metric('回访占比',a.returning_rate,'%',y.returning_rate,1),
+        metric('复制失败人数',a.copy_fail,'',y.copy_fail),metric('登记邮箱',a.email_submit,'',y.email_submit)])
+      +list('来源（src 参数）',a.sources)+list('来源（referrer）',a.referrers)+list('打开环境',a.env)
+      +'<div class="note">口径：GoatCounter 按"访客"计数，同一会话内重复点击只算 1 人。近似跳出率 = 1 − 生成人数/访客。</div>');
+    h+=section('分享传播 · 今日','更新于 '+t.updated_at_bj,
+      grid([metric('分享按钮点击',a.share_click||null,'',y.share_click),metric('系统分享成功',a.share_native_ok,'',y.share_native_ok),metric('复制分享链接',a.share_copylink,'',y.share_copylink),
+        metric('分享链接来访',a.share_visitors||null,'',y.share_visitors),metric('传播系数',a.share_visitors?a.k_factor:null,'%',y.k_factor,1)]));
+    h+=section('本周累计（自 '+t.week_start+' 起）','更新于 '+t.updated_at_bj,
+      grid([metric('访客',w.visitors),metric('生成人数',w.generate),metric('复制标题人数',w.copy_title),metric('复制正文人数',w.copy_body),metric('分享点击',w.share_click||null),metric('分享来访',w.share_visitors||null)])+list('来源（src）',w.sources));
+  } else if(d.tool_error){ h+=section('工具使用','','<div class="err">工具侧数据暂不可用（'+esc(d.tool_error)+'）</div>'); }
+  var x=d.x;
+  if(x&&(has(x.followers)||has(x.posts))){
+    var rows=(x.posts||[]).map(function(p){var c=[p.impressions,p.likes,p.bookmarks,p.replies,p.reposts,p.quotes];return'<tr><td>'+esc(p.label||p.id)+'</td>'+c.map(function(v){return'<td>'+(has(v)?esc(v):'')+'</td>'}).join('')+'</tr>'}).join('');
+    h+=section('X '+(x.account||''),'更新于 '+(x.updated_at_bj||'未知')+' · '+(x.freq||'定时采集'),
+      grid([metric('粉丝',x.followers),metric('新增粉丝',x.followers_delta)])+(rows?'<table><tr><th>帖子</th><th>曝光</th><th>赞</th><th>藏</th><th>回</th><th>转</th><th>引</th></tr>'+rows+'</table>':''));
+  }
+  var r=d.xhs;
+  if(r&&(has(r.account)||has(r.notes))){
+    var ac=r.account||{};
+    var cols=[['views','曝光/阅读'],['likes','赞'],['collects','藏'],['comments','评'],['shares','分享'],['new_followers','涨粉']].filter(function(c){return(r.notes||[]).some(function(n){return has(n[c[0]])})});
+    var tb=(r.notes||[]).length&&cols.length?'<table><tr><th>笔记</th>'+cols.map(function(c){return'<th>'+c[1]+'</th>'}).join('')+'</tr>'+r.notes.map(function(n){return'<tr><td>'+esc(n.title||n.id||'')+'</td>'+cols.map(function(c){return'<td>'+(has(n[c[0]])?esc(n[c[0]]):'')+'</td>'}).join('')+'</tr>'}).join('')+'</table>':'';
+    h+=section('小红书 '+(ac.name||''),'人工录入 · 更新于 '+(r.updated_at_bj||'未知')+' · 每天 1 次',
+      grid([metric('粉丝',ac.followers),metric('新增粉丝',ac.followers_delta),metric('获赞与收藏',ac.likes_and_collects)])+tb);
+  }
+  app.innerHTML=h||'<section>暂无数据</section>';
+}
+function load(){
+  var xhr=new XMLHttpRequest();xhr.open('GET','stats.json?t='+Date.now());
+  xhr.onload=function(){try{render(JSON.parse(xhr.responseText))}catch(e){app.innerHTML='<section class="err">数据解析失败</section>'}};
+  xhr.onerror=function(){app.innerHTML='<section class="err">数据加载失败，请稍后刷新</section>'};
+  xhr.send();
+}
+load();setInterval(load,5*60*1000);
+})();
+</script>
+</body>
+</html>
