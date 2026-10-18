@@ -1,0 +1,102 @@
+{
+ "date": "2026-10-17",
+ "tool": {
+  "visitors": 1,
+  "generate": 0,
+  "generate_rate": 0,
+  "copy_title": 0,
+  "copy_body": 0,
+  "copy_rate_min": 0,
+  "copy_fail": null,
+  "engaged_30s_rate": 0,
+  "bounce_approx": 100,
+  "returning_rate": 0,
+  "share_click": 0,
+  "share_native_ok": null,
+  "share_copylink": null,
+  "share_visitors": 0,
+  "k_factor": 0,
+  "email_submit": null,
+  "sources": [
+   {
+    "name": "x",
+    "count": 1
+   }
+  ],
+  "referrers": [
+   {
+    "name": "t.co",
+    "count": 2
+   },
+   {
+    "name": "x",
+    "count": 1
+   }
+  ],
+  "env": [
+   {
+    "name": "其他浏览器",
+    "count": 1
+   }
+  ]
+ },
+ "week": {
+  "visitors": 1,
+  "generate": 0,
+  "generate_rate": 0,
+  "copy_title": 0,
+  "copy_body": 0,
+  "copy_rate_min": 0,
+  "copy_fail": null,
+  "engaged_30s_rate": 0,
+  "bounce_approx": 100,
+  "returning_rate": 0,
+  "share_click": 0,
+  "share_native_ok": null,
+  "share_copylink": null,
+  "share_visitors": 0,
+  "k_factor": 0,
+  "email_submit": null,
+  "sources": [
+   {
+    "name": "x",
+    "count": 1
+   }
+  ],
+  "referrers": [
+   {
+    "name": "t.co",
+    "count": 2
+   },
+   {
+    "name": "x",
+    "count": 1
+   }
+  ],
+  "env": [
+   {
+    "name": "其他浏览器",
+    "count": 1
+   }
+  ]
+ },
+ "x": {
+  "account": "@Nick_8343",
+  "updated_at_bj": null,
+  "freq": "每天 2 次（09:00、21:00 北京时间），由 X 只读连接器采集后提交",
+  "followers": null,
+  "followers_delta": null,
+  "posts": []
+ },
+ "xhs": {
+  "updated_at_bj": null,
+  "recorded_by": null,
+  "account": {
+   "name": "0粉起号日记",
+   "followers": null,
+   "followers_delta": null,
+   "likes_and_collects": null
+  },
+  "notes": []
+ }
+}
