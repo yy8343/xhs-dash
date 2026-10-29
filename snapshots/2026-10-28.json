@@ -1,0 +1,24 @@
+{
+ "date": "2026-10-28",
+ "tool": null,
+ "week": null,
+ "x": {
+  "account": "@Nick_8343",
+  "updated_at_bj": null,
+  "freq": "每天 2 次（09:00、21:00 北京时间），由 X 只读连接器采集后提交",
+  "followers": null,
+  "followers_delta": null,
+  "posts": []
+ },
+ "xhs": {
+  "updated_at_bj": null,
+  "recorded_by": null,
+  "account": {
+   "name": "0粉起号日记",
+   "followers": null,
+   "followers_delta": null,
+   "likes_and_collects": null
+  },
+  "notes": []
+ }
+}
